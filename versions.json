@@ -1,0 +1,9 @@
+{
+  "versions": [
+    {
+      "version": "0.1.0",
+      "artifactUrl": "https://github.com/spacelift-io/flows-app-pinecone/releases/download/v0.1.0/bundle.tar.gz",
+      "artifactChecksum": "sha256:505a5ff91c392c95f5dfd538951b1fe4b0e9cf6e40df9bdbad0670de47d67d22"
+    }
+  ]
+}
