@@ -1,151 +1,92 @@
-# Flows App Template
+# Pinecone Assistant - Flows App
 
-A template repository for creating new Flows apps with best practices and CI/CD built-in.
+A Flows app that integrates with Pinecone's Assistant API, enabling you to create AI assistants with context retrieval, file management, and chat capabilities.
 
 ## Quick Start
 
-1. **Use this template** - Click "Use this template" button to create a new repository
-2. **Run setup** - `npm run setup` to customize placeholders automatically
-3. **Implement your logic** - Add blocks and customize configuration
-4. **Set up CI/CD** - Configure branch protection and deployment
-5. **Release** - Tag and release your app
+1. **Install dependencies** - `npm install`
+2. **Get Pinecone API Key** - Visit https://app.pinecone.io/ and create an API key
+3. **Configure** - Add your API key when installing the app in Flows
+4. **Deploy** - Use the blocks to create assistants and manage your knowledge base
 
-## Template Structure
+## App Structure
 
 ```
-├── .github/workflows/ci.yml    # CI/CD pipeline
-├── .gitignore                  # Git ignore rules
-├── package.json                # Dependencies and scripts
-├── tsconfig.json              # TypeScript configuration
-├── main.ts                    # App definition
-├── types.ts                   # Type definitions
-├── blocks/                    # Block implementations
-│   ├── index.ts              # Block registry and exports
-│   └── exampleBlock.ts       # Example block implementation
-├── setup.sh                  # Automated setup script
-└── README.md                 # This file
+├── main.ts                    # App definition and configuration
+├── package.json               # Dependencies and scripts
+├── tsconfig.json             # TypeScript configuration
+├── blocks/                   # Block implementations
+│   ├── assistant.ts          # Assistant resource management
+│   ├── dataFile.ts          # Data file resource management
+│   ├── simpleChat.ts        # Simple chat with assistant
+│   ├── rawChat.ts           # Raw chat interface
+│   ├── retrieveSnippets.ts  # Context retrieval from knowledge base
+│   ├── uploadFile.ts        # Upload files to assistant
+│   ├── deleteFile.ts        # Delete files from assistant
+│   ├── listFiles.ts         # List assistant files
+│   ├── updateAssistant.ts   # Update assistant configuration
+│   └── shared/              # Shared utilities
+│       └── chatHelpers.ts   # Chat helper functions
+└── README.md                # This file
 ```
 
-## Customization Guide
+## Features
 
-### 1. Replace Placeholders
+### Available Blocks
 
-Find and replace these placeholders throughout the codebase:
+#### Resources
 
-- `{{APP_NAME}}` - Your app name (e.g., "Slack Integration")
-- `{{APP_DESCRIPTION}}` - Brief description of your app
+- **Assistant** - Create and manage Pinecone assistants
+- **Data File** - Manage data files for your assistants
 
-**Files to update:**
+#### Actions
 
-- `package.json` - name and description fields
-- `main.ts` - app name and description
-- `types.ts` - JSDoc comments
-- `README.md` - update this file
+- **Simple Chat** - Chat with your assistant using simple text input/output
+- **Raw Chat** - Advanced chat interface with full message control
+- **Context Retrieval** - Retrieve relevant snippets from your knowledge base
+- **Upload File** - Add files to your assistant's knowledge base
+- **Delete File** - Remove files from your assistant
+- **List Files** - View all files associated with an assistant
+- **Update Assistant** - Modify assistant configuration and instructions
 
-### 2. Customize Configuration
+### Configuration
 
-In `main.ts`, modify the `config` object:
+The app requires a single configuration parameter:
 
-```typescript
-config: {
-  type: "object",
-  properties: {
-    apiKey: {
-      type: "string",
-      title: "API Key",
-      description: "Your service API key",
-      secret: true  // This makes it a password field
-    },
-    baseUrl: {
-      type: "string",
-      title: "Base URL",
-      description: "API base URL",
-      default: "https://api.example.com"
-    }
-  },
-  required: ["apiKey"]  // Required fields
-}
-```
+- **Pinecone API Key** (required, sensitive) - Your API key from https://app.pinecone.io/
 
-### 3. Implement Your Blocks
+The app automatically validates your API key on installation by attempting to list your assistants.
 
-The template includes a clean block structure. Blocks are organized in the `blocks/` directory:
+## Usage Examples
 
-#### Adding a New Block
+### Basic Workflow
 
-1. **Create the block file** (e.g., `blocks/myNewBlock.ts`):
+1. **Create an Assistant**
+   - Use the Assistant resource block to create a new Pinecone assistant
+   - Configure its instructions and model preferences
 
-```typescript
-import { AppBlock, EventInput } from "@slflows/sdk";
+2. **Upload Knowledge Base**
+   - Use Upload File to add documents to your assistant's knowledge base
+   - Files are automatically processed and indexed by Pinecone
 
-export const myNewBlock: AppBlock = {
-  name: "Your Action Name",
-  description: "What your block does",
-  category: "Your Category",
+3. **Chat with Context**
+   - Use Simple Chat for basic conversations
+   - Use Context Retrieval to get relevant snippets before chatting
+   - Use Raw Chat for advanced message handling
 
-  inputs: {
-    default: {
-      name: "Input Name",
-      description: "What users need to provide",
-      config: {
-        // Define your input schema here
-        type: "object",
-        properties: {
-          message: {
-            type: "string",
-            title: "Message",
-            description: "Input description",
-          },
-        },
-        required: ["message"],
-      },
-      onEvent: async (input: EventInput, { events }) => {
-        // Your logic here
-        const message = input.params.message as string;
-        const apiKey = input.app.config.apiKey as string;
+4. **Manage Files**
+   - Use List Files to see all uploaded documents
+   - Use Delete File to remove outdated content
+   - Use Update Assistant to modify instructions or settings
 
-        // Call your external API, process data, etc.
+### Integration Patterns
 
-        // Just emit the result directly - don't wrap in success object
-        await events.emit({
-          result: "your result",
-        });
-      },
-    },
-  },
+The blocks are designed to work together in flows:
 
-  outputs: {
-    default: {
-      name: "Output Name",
-      description: "What your block returns",
-      default: true,
-      type: {
-        // Define your output schema here
-        type: "object",
-        properties: {
-          result: { type: "string" },
-        },
-        required: ["result"],
-      } as any,
-    },
-  },
-};
-```
-
-2. **Register the block** in `blocks/index.ts`:
-
-```typescript
-import { myNewBlock } from "./myNewBlock.ts";
-
-export const blocks = {
-  example: exampleBlock,
-  myNew: myNewBlock, // Add your block here
-} as const;
-
-export { myNewBlock }; // Export for external use
-```
-
-That's it! The block will automatically be included in your app via `Object.values(blocks)` in `main.ts`.
+- **Context → Chat**: Retrieve relevant context before sending chat messages
+- **Upload → List**: Upload files and verify they were added successfully
+- **Assistant → Update**: Create an assistant then modify its configuration
+- **Chat → Context**: Use chat responses to guide context retrieval
 
 ## Development
 
@@ -158,168 +99,91 @@ That's it! The block will automatically be included in your app via `Object.valu
 
 ```bash
 npm install
-npm run setup        # Interactive setup to customize template
 ```
 
 ### Available Scripts
 
 ```bash
-npm run setup        # Customize template placeholders
 npm run typecheck    # Type checking
 npm run format       # Code formatting
-npm run bundle       # Create deployment bundle
 ```
 
 ### Testing Your App
 
 1. Run type checking: `npm run typecheck`
 2. Format code: `npm run format`
-3. Create bundle: `npm run bundle`
 
-**Note**: Initial `npm run typecheck` will show SDK import errors until you customize the template. This is expected - the SDK will be available when the app runs in the Flows environment.
+**Note**: TypeScript may show SDK import errors during development. This is expected - the SDK will be available when the app runs in the Flows environment.
 
-## CI/CD Pipeline
+## Architecture
 
-The template includes a complete CI/CD pipeline in `.github/workflows/ci.yml`:
+### Pinecone Integration
 
-### Continuous Integration
+This app integrates with Pinecone's Assistant API, which provides:
 
-- **Triggers**: All branch pushes (except main)
-- **Steps**: Type check, format validation, bundling
-- **Quality Gates**: Must pass all checks to merge
+- **Managed AI Assistants** - Pre-configured AI models with custom instructions
+- **Knowledge Base** - Automatic file processing and vector indexing
+- **Context Retrieval** - Semantic search across your documents
+- **Chat Interface** - Conversational AI with RAG (Retrieval Augmented Generation)
 
-### Automated Releases
+### Block Design
 
-- **Triggers**: Semver tags (v1.0.0, v2.1.3, etc.)
-- **Process**:
-  1. Runs full CI validation
-  2. Creates GitHub release with bundle
-  3. Updates version registry (`versions.json`)
-  4. Pushes registry to main branch
+Each block is designed for a specific use case:
 
-### Version Registry
-
-The pipeline automatically maintains a `versions.json` file:
-
-```json
-{
-  "versions": [
-    {
-      "version": "1.0.0",
-      "artifactUrl": "https://github.com/user/repo/releases/download/v1.0.0/bundle.tar.gz",
-      "artifactChecksum": "sha256:abc123..."
-    }
-  ]
-}
-```
-
-## Repository Setup
-
-### 1. Branch Protection (Recommended)
-
-Configure branch protection for `main`:
-
-- Require pull request reviews
-- Require status checks (CI)
-- Allow GitHub Actions bot to bypass (for version registry updates)
-
-### 2. Repository Settings
-
-- Enable "Template repository" if this will be reused
-- Configure secrets if needed for external services
-- Set up branch protection rules
-
-## Deployment
-
-### Creating Releases
-
-1. **Ensure main is clean**: All changes merged and CI passing
-2. **Create and push tag**:
-   ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-3. **Automated process**: CI creates release and updates registry
-4. **Verify**: Check GitHub releases and `versions.json` in main
-
-### Versioning
-
-Follow [Semantic Versioning](https://semver.org/):
-
-- `v1.0.0` - Major release (breaking changes)
-- `v1.1.0` - Minor release (new features)
-- `v1.0.1` - Patch release (bug fixes)
-
-## Best Practices
-
-### Code Organization
-
-- Keep `main.ts` focused on app definition
-- Use `types.ts` for all TypeScript definitions
-- Document your blocks and configuration clearly
+- **Resource blocks** (Assistant, Data File) manage Pinecone entities
+- **Action blocks** provide specific functionality like chat or file operations
+- **Shared utilities** in `blocks/shared/` provide common functionality
 
 ### Error Handling
 
-- Let errors bubble up naturally - don't catch and wrap them
-- Use descriptive error messages
-- The framework will handle error catching and reporting
+The app follows Flows best practices:
 
-### Security
-
-- Mark sensitive config fields as `secret: true`
-- Never log API keys or sensitive data
-- Validate all inputs
-
-### Testing
-
-- Test your blocks manually before releasing
-- Verify configuration schema works as expected
-- Test the complete deployment pipeline
+- Errors bubble up naturally without wrapping
+- Descriptive error messages for debugging
+- Automatic API key validation on app installation
 
 ## Troubleshooting
 
 ### Common Issues
 
-**CI fails on format check**
+**"Invalid API Key" error**
 
-```bash
-npm run format
-git add .
-git commit -m "Fix formatting"
-```
+- Verify your API key is correct at https://app.pinecone.io/
+- Check that the key has appropriate permissions
+- Ensure the key is properly pasted without extra spaces
 
-**Bundle creation fails**
+**Assistant not found**
 
-- Check TypeScript errors: `npm run typecheck`
-- Verify all imports are correct
-- Ensure `main.ts` exports default app
+- Make sure the assistant exists in your Pinecone account
+- Verify you're using the correct assistant ID
+- Check that the assistant is properly configured
 
-**Release creation fails**
+**File upload failures**
 
-- Verify branch protection allows GitHub Actions bot
-- Check repository permissions
-- Ensure tag follows semver format (v1.0.0)
+- Ensure file size is within Pinecone's limits
+- Check file format is supported
+- Verify sufficient quota in your Pinecone account
 
-**Version registry not updating**
+**Type checking errors**
 
-- Check GitHub Actions bot has push access to main
-- Verify workflow permissions in repository settings
-- Check for conflicts in versions.json
+- Run `npm run typecheck` to identify specific issues
+- Ensure all dependencies are installed
+- Check that SDK imports are correct
 
-## Template Checklist
+## Dependencies
 
-When creating a new app from this template:
+- **@pinecone-database/pinecone** - Official Pinecone JavaScript SDK
+- **@slflows/sdk** - Flows platform SDK
+- **TypeScript** - Type safety and development tooling
 
-- [ ] Run `npm install && npm run setup` for automated setup
-- [ ] Customize app configuration schema in `main.ts`
-- [ ] Implement your block logic in `blocks/`
-- [ ] Update block names, descriptions, and categories
-- [ ] Define proper input/output schemas
-- [ ] Test locally with `npm run typecheck` and `npm run bundle`
-- [ ] Update this README with app-specific information
-- [ ] Set up repository branch protection
-- [ ] Create first release with `git tag v1.0.0`
+## Contributing
 
----
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run `npm run typecheck` and `npm run format`
+5. Submit a pull request
 
-**Template Version**: 1.0.0
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
