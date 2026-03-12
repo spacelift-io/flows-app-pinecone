@@ -6,9 +6,9 @@ on:
 jobs:
   build:
     name: Build
-    uses: spacelift-io/flows-community-registry/.github/workflows/build-app-version.yml@main
+    uses: spacelift-flows-apps/flows-community-registry/.github/workflows/build-app-version.yml@main
 
   release:
     name: Release
     needs: build
-    uses: spacelift-io/flows-community-registry/.github/workflows/release-app-version.yml@main
+    uses: spacelift-flows-apps/flows-community-registry/.github/workflows/release-app-version.yml@main
