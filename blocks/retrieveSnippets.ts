@@ -65,7 +65,7 @@ export const retrieveSnippets: AppBlock = {
         const assistant = new Pinecone({ apiKey }).Assistant(assistantName);
 
         const pendingId = await events.createPending({
-          outputId: "default",
+          outputKey: "default",
           statusDescription: "Retrieving context snippets...",
           event: { messages },
         });

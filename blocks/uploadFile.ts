@@ -65,7 +65,7 @@ export const uploadFile: AppBlock = {
 
           // Create pending event and start checking
           const pendingId = await events.createPending({
-            outputId: "default",
+            outputKey: "default",
             statusDescription: "Checking file status...",
             event: {
               fileId: id,
@@ -75,7 +75,7 @@ export const uploadFile: AppBlock = {
           });
 
           // Start status checking with timer
-          await timers.set(5, {
+          await timers.block.set(5, {
             inputPayload: {
               assistantName,
               pendingId,
@@ -123,7 +123,7 @@ export const uploadFile: AppBlock = {
         });
 
         // Schedule next check in 15 seconds
-        await timers.set(15, {
+        await timers.block.set(15, {
           inputPayload: {
             assistantName,
             pendingId,

@@ -46,7 +46,7 @@ export const updateAssistant: AppBlock = {
         const pinecone = new Pinecone({ apiKey: app.config.apiKey });
 
         const pendingId = await events.createPending({
-          outputId: "default",
+          outputKey: "default",
           statusDescription: "Updating assistant...",
           event: { assistantName },
         });
