@@ -24,7 +24,7 @@ export const listFiles: AppBlock = {
         const assistant = pinecone.Assistant(assistantName);
 
         const pendingId = await events.createPending({
-          outputId: "default",
+          outputKey: "default",
           statusDescription: "Listing files...",
           event: {},
         });

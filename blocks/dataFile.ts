@@ -147,7 +147,9 @@ export const dataFile: AppBlock = {
         };
       }
 
-      return {};
+      // Unreachable in practice: status === "Processing" implies shouldCheck === true.
+      // Kept defensively so the type checker sees an exhaustive return.
+      return { newStatus: "in_progress" };
     }
 
     try {

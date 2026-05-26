@@ -123,7 +123,7 @@ export const rawChat: AppBlock = {
         const { messages } = event.inputConfig;
 
         const pendingEventId = await events.createPending({
-          outputId: "default",
+          outputKey: "default",
           statusDescription: "Assistant response in progress",
           event: {},
         });

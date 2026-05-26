@@ -90,7 +90,7 @@ export const simpleChat: AppBlock = {
         await saveConversation(conversationId, messages, block.config.ttl);
 
         const pendingEventId = await events.createPending({
-          outputId: "default",
+          outputKey: "default",
           statusDescription: "Assistant response in progress",
           event: { conversationId, continued },
         });
